@@ -1,0 +1,35 @@
+{
+  "name": "@vs-org/cookie",
+  "version": "0.0.1",
+  "description": "This is simple cookie helper for handling cookie operations like create cookie, get cookie (signed or unsigned), sign cookie with secret, verify cookie signature, parse cookies from cookie string",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "npm test && rm -rf lib/ && tsc",
+    "prepublishOnly": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vaibhav-sarwade-404/vs-cookie.git"
+  },
+  "author": "Vaibhav Sarwade",
+  "license": "MIT",
+  "keywords": ["cookie parser","cookie handler","cookies","node js cookies","express cookie","vs cookie","vs-org cookie"],
+  "bugs": {
+    "url": "https://github.com/vaibhav-sarwade-404/vs-cookie/issues"
+  },
+  "homepage": "https://github.com/vaibhav-sarwade-404/vs-cookie#readme",
+  "devDependencies": {
+    "@types/jest": "^28.1.8",
+    "@types/node": "^18.7.13",
+    "jest": "^28.0.0",
+    "test-jest": "^1.0.1",
+    "ts-jest": "^28.0.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.2"
+  }
+}
