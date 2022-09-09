@@ -35,14 +35,15 @@ declare class VsCookie {
      * This function will sign cookie with cookie hash generated with provided secret
      * @param cookie {String} -- cookie value to sign
      * @param secret {String} -- secret to sign cookie with
+     * @param encode {Function} -- function to encode cookie with default encodeURIComponent
      *
      * @throws {TypeError | Error}
      *
      * Eg: sign("test","This is cookie signing secret");
-     * Returns: test.hWtzMM7E4KTirRm3N8GZ4DB5E1b9j4DVtMYh4zkwvQ
+     * Returns: test:"hWtzMM7E4KTirRm3N8GZ4DB5E1b9j4DVtMYh4zkwvQ
      *
      */
-    static sign(cookie: string, secret: string): string | never;
+    static sign(cookie: string, secret: string, encode?: Function): string | never;
     /**
      *
      * This function will validate cookie signature and returns true or false.
@@ -51,12 +52,13 @@ declare class VsCookie {
      * verification will fail and result will be false even if sign could be valid with other signing package
      * @param cookie {String} -- cookie value to sign
      * @param secret {String} -- cookie signed secret
+     * @param decode {Function} -- function to decode cookie with default decodeURIComponent
      *
      * @return {boolean} - true if cookie has valid signature otherwise false
      *
      * @throws {TypeError | Error}
      */
-    static verify(cookie: string, secret: string): boolean | never;
+    static verify(cookie: string, secret: string, decode?: Function): boolean | never;
     /**
      * This function will parse cookie from cookies string and return a object
      * @param cookies - cookies string
