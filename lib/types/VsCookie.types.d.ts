@@ -49,6 +49,6 @@ export declare type VsCookieOption = {
     SameSite?: true | "Strict" | "Lax" | "None";
 };
 export declare type GetCookieOptions = {
-    decode: (str: string) => string;
+    decode?: (str: string) => string;
     secret?: string;
 };
