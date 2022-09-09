@@ -58,7 +58,7 @@ class VsCookie {
       : "";
 
     if (secret) {
-      if (this.verify(cookie, secret))
+      if (VsCookie.verify(cookie, secret))
         return decode(cookie.split(separator)[0] || "");
       throw new Error(`Invalid cookie signature`);
     }

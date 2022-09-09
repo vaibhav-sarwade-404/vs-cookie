@@ -6,14 +6,27 @@ describe("Vs Cookie", () => {
     expect(cookie).toEqual("test=test;Priority=Medium");
   });
 
-  test("get cookie", () => {
-    const cookie = getCookie(
-      "test=test;test1=test1;encodedSignedCookie=Cookie%20test%20value:MNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs",
-      "encodedSignedCookie"
-    );
-    expect(cookie).toEqual(
-      "Cookie test value:MNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs"
-    );
+  describe("get cookie", () => {
+    test("with signature if present", () => {
+      const cookie = getCookie(
+        "test=test;test1=test1;encodedSignedCookie=Cookie%20test%20value:MNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs",
+        "encodedSignedCookie"
+      );
+      expect(cookie).toEqual(
+        "Cookie test value:MNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs"
+      );
+    });
+
+    test("without signature, verified if present", () => {
+      const cookie = getCookie(
+        "test=test;test1=test1;encodedSignedCookie=Cookie%20test%20value:MNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs",
+        "encodedSignedCookie",
+        {
+          secret: "This is cookie signing secret"
+        }
+      );
+      expect(cookie).toEqual("Cookie test value");
+    });
   });
 
   test("parse cookies", () => {
