@@ -59,7 +59,7 @@ class VsCookie {
 
     if (secret) {
       if (VsCookie.verify(cookie, secret))
-        return decode(cookie.split(separator)[0] || "");
+        return decode(cookie).split(separator)[0] || "";
       throw new Error(`Invalid cookie signature`);
     }
     return decode(cookie);
@@ -137,7 +137,9 @@ class VsCookie {
 
     Domain && cookie.push(`Domain=${Domain}`);
     HttpOnly && cookie.push(`HttpOnly`);
-    maxAge && cookie.push(`Max-Age=${maxAge}`);
+    if (typeof maxAge === "number") {
+      cookie.push(`Max-Age=${maxAge}`);
+    }
     Priority && cookie.push(`Priority=${Priority}`);
     Secure && cookie.push("Secure");
     SameSite &&
