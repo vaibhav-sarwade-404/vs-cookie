@@ -1,6 +1,6 @@
 {
   "name": "@vs-org/cookie",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "This is simple cookie helper for handling cookie operations like create cookie, get cookie (signed or unsigned), sign cookie with secret, verify cookie signature, parse cookies from cookie string",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

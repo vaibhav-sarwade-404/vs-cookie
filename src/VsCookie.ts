@@ -129,6 +129,12 @@ class VsCookie {
         );
       }
     }
+    if (SameSite && !Secure) {
+      throw new TypeError(
+        `Cookie SameSite can only be used with Secure attribute as "true"`
+      );
+    }
+
     if (typeof encode !== "function") {
       throw new TypeError(`encode is not is not a function`);
     }
