@@ -56,10 +56,15 @@ class VsCookie {
     const cookie = Array.isArray(cookieNameValuePair)
       ? cookieNameValuePair[1]
       : "";
-
+    const _separator = options?.separor || separator;
     if (secret) {
-      if (VsCookie.verify(cookie, secret))
-        return decode(cookie).split(separator)[0] || "";
+      if (
+        VsCookie.verify(cookie, secret, {
+          separator: _separator
+        })
+      )
+        return decode(cookie).split(_separator)[0] || "";
+
       throw new Error(`Invalid cookie signature`);
     }
     return decode(cookie);
@@ -158,7 +163,9 @@ class VsCookie {
    * This function will sign cookie with cookie hash generated with provided secret
    * @param cookie {String} -- cookie value to sign
    * @param secret {String} -- secret to sign cookie with
-   * @param encode {Function} -- function to encode cookie with default encodeURIComponent
+   * @param options {Object} -- cookie additional options
+   * @param options.separator {string} -- cookie signature separator
+   * @param options.encode {Function} -- function to encode cookie with default encodeURIComponent
    *
    * @throws {TypeError | Error}
    *
@@ -169,7 +176,10 @@ class VsCookie {
   static sign(
     cookie: string,
     secret: string,
-    encode: Function = encodeURIComponent
+    options: { separator?: string; encode?: Function } = {
+      encode: encodeURIComponent,
+      separator
+    }
   ): string | never {
     if (typeof cookie !== "string" || !cookie) {
       throw new TypeError(`cookie should be a valid string`);
@@ -177,10 +187,25 @@ class VsCookie {
     if (typeof secret !== "string" || !secret) {
       throw new TypeError(`secret should be a valid string`);
     }
-    if (typeof encode !== "function") {
+    if (options && typeof options !== "object") {
+      throw new TypeError(`options should be a valid object`);
+    }
+    if (typeof cookie !== "string" || !cookie) {
+      throw new TypeError(`cookie should be a valid string`);
+    }
+    if (options && options.encode && typeof options.encode !== "function") {
       throw new TypeError(`encode should be a function`);
     }
-    return encode(`${cookie}${separator}${VsCookie.hash(cookie, secret)}`);
+
+    const _seperate = options.separator || separator;
+
+    const encode = options.encode || encodeURIComponent;
+    if (cookie.includes(_seperate)) {
+      throw new TypeError(
+        `cookie value cannot conatain separator(${_seperate}).`
+      );
+    }
+    return encode(`${cookie}${_seperate}${VsCookie.hash(cookie, secret)}`);
   }
 
   /**
@@ -191,7 +216,9 @@ class VsCookie {
    * verification will fail and result will be false even if sign could be valid with other signing package
    * @param cookie {String} -- cookie value to sign
    * @param secret {String} -- cookie signed secret
-   * @param decode {Function} -- function to decode cookie with default decodeURIComponent
+   * @param options {Object} -- cookie additional options
+   * @param options.separator {string} -- cookie signature separator
+   * @param options.decode {Function} -- function to decode cookie with default decodeURIComponent
    *
    * @return {boolean} - true if cookie has valid signature otherwise false
    *
@@ -200,7 +227,10 @@ class VsCookie {
   static verify(
     cookie: string,
     secret: string,
-    decode: Function = decodeURIComponent
+    options: { separator?: string; decode?: Function } = {
+      decode: decodeURIComponent,
+      separator
+    }
   ): boolean | never {
     if (typeof cookie !== "string" || !cookie) {
       throw new TypeError(`cookie should be a valid string`);
@@ -208,8 +238,18 @@ class VsCookie {
     if (typeof secret !== "string" || !secret) {
       throw new TypeError(`secret should be a valid string`);
     }
+    if (options && typeof options !== "object") {
+      throw new TypeError(`options should be a valid object`);
+    }
+    if (options && options.decode && typeof options.decode !== "function") {
+      throw new TypeError(`encode should be a function`);
+    }
+
+    const _seperate = options.separator || separator;
+    const decode = options.decode || decodeURIComponent;
+
     cookie = decode(cookie);
-    const [originalCookieVal, originalCookieHash] = cookie.split(separator);
+    const [originalCookieVal, originalCookieHash] = cookie.split(_seperate);
 
     if (!originalCookieVal || !originalCookieHash) {
       return false;

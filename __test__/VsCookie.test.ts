@@ -17,6 +17,22 @@ describe("Vs Cookie", () => {
       );
     });
 
+    test("with signature if present, signed with seperator as `-`", () => {
+      const signedCookie = sign(
+        "Cookie test :value",
+        "This is cookie signing secret",
+        {
+          separator: "-"
+        }
+      );
+      const cookie = getCookie(
+        `test=test;test1=test1;encodedSignedCookie=${signedCookie}`,
+        "encodedSignedCookie",
+        { separor: "-", secret: "This is cookie signing secret" }
+      );
+      expect(cookie).toEqual("Cookie test :value");
+    });
+
     test("without signature, verified if present", () => {
       const cookie = getCookie(
         "test=test;test1=test1;encodedSignedCookie=Cookie%20test%20value:MNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs",
@@ -39,14 +55,40 @@ describe("Vs Cookie", () => {
     );
   });
 
-  test("sign cookie", () => {
-    const signedCookie = sign(
-      "Cookie test value",
-      "This is cookie signing secret"
-    );
-    expect(signedCookie).toEqual(
-      "Cookie%20test%20value%3AMNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs"
-    );
+  describe("Sign cookie", () => {
+    test("valid cookie value", () => {
+      const signedCookie = sign(
+        "Cookie test value",
+        "This is cookie signing secret"
+      );
+      expect(signedCookie).toEqual(
+        "Cookie%20test%20value%3AMNl7dgVTIKAkB2KMEv9AaVuq969eVhZqIIIAw7ZDs"
+      );
+    });
+
+    test("invalid cookie value, contains (:) separator", () => {
+      try {
+        const signedCookie = sign(
+          "Cookie :test value",
+          "This is cookie signing secret"
+        );
+      } catch (error) {
+        expect(error).toEqual(
+          new TypeError("cookie value cannot conatain separator(:).")
+        );
+      }
+    });
+
+    test("valid cookie value, contains (:) but separator as (-)", () => {
+      const signedCookie = sign(
+        "Cookie :test value",
+        "This is cookie signing secret",
+        { separator: "-" }
+      );
+      expect(signedCookie).toEqual(
+        "Cookie%20%3Atest%20value-3KV68YGLG0GrgscHSlFoRyDgvzxaN3o0gT3oBTr7EM"
+      );
+    });
   });
 
   describe("Verify cookie", () => {
@@ -72,6 +114,15 @@ describe("Vs Cookie", () => {
         "This is cookie signing secret"
       );
       expect(isValidCookie).toBeFalsy();
+    });
+
+    test("cookie signature with different separator", () => {
+      const isValidCookie = verify(
+        "Cookie%20%3Atest%20value-3KV68YGLG0GrgscHSlFoRyDgvzxaN3o0gT3oBTr7EM",
+        "This is cookie signing secret",
+        { separator: "-" }
+      );
+      expect(isValidCookie).toBeTruthy();
     });
   });
 });

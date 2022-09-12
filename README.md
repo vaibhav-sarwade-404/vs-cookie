@@ -72,9 +72,23 @@ console.log(signedCookie); // cookieValue%3A2V92ZahIZBNWU5aJSVZBeFNSMfNTqOl2crex
 
 ```
 
+6. sign cookie but use different separtor
+
+   a) Package uses `:` as default separator for cookie and cookie signature. <br/>
+   b) If application has cookies containing `:` then `separator` can be passed in option to use it to sign cookie. Make sure same separator is used while verifying
+
+```
+const { sign } = require("@vs-org/cookie");
+
+const signedCookie = sign("Cookie :test value", "This is cookie signing secret", { separator: "-" });
+
+console.log(signedCookie); // Cookie%20%3Atest%20value-3KV68YGLG0GrgscHSlFoRyDgvzxaN3o0gT3oBTr7EM
+
+```
+
 <br/>
 
-6. verify cookie signature
+7. verify cookie signature
 
 ```
 const { verify } = require("@vs-org/cookie");
@@ -87,6 +101,22 @@ console.log(isValidCookie1); // true
 const isValidCookie2 = verify("cookieValue%3Aabcdefg","This is cookie signing secret");
 
 console.log(isValidCookie2); // false
+
+```
+
+<br/>
+
+8. verify cookie signature with different separator
+
+   a) Package uses `:` as default separator for cookie and cookie signature. <br/>
+   b) If application has signed cookies with different separator then `separator` can be passed in option which will be used for verifying signature.
+
+```
+const { verify } = require("@vs-org/cookie");
+
+const isValidCookie1 = verify("Cookie%20%3Atest%20value-3KV68YGLG0GrgscHSlFoRyDgvzxaN3o0gT3oBTr7EM","This is cookie signing secret", { separator: "-" });
+
+console.log(isValidCookie1); // true
 
 ```
 
@@ -110,6 +140,22 @@ console.log(isValidCookie2); // false
 | `Priority` | `Hight, Mediym, Low`      | Prioriy can be set in Chrome browser only as of today. It helps browser decides cookie priority in order to strip cookies in case of limit exceeds                                                                                                                                                                  |
 | `Secure`   | boolean                   | only send cookies with HTTPS and not HTTP                                                                                                                                                                                                                                                                           |
 | `SameSite` | `true, Strict, Lax, None` | Cookies used for storing sensetive information like authentication / authenticated session should have short lifetime with SameSite as "Strict" or "Lax"                                                                                                                                                            |
+
+<br/>
+
+## VS Cookie function signatures
+
+<br/>
+
+| Name           | Function signature                                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `createCookie` | `(cookieOption: VsCookieOption) => string \| never`                                                                           |
+| `getCookie`    | `(cookies: string, cookieName: string, options?: {decode?: Function; secret?: string; separor?: string;}) => string \| never` |
+| `parse`        | `(cookies: string, decode: Function = decodeURIComponent) => object \| never`                                                 |
+| `sign`         | `(cookie: string, secret: string, options: { separator?: string; encode?: Function }) => string \| never`                     |
+| `verify`       | `(cookie: string, secret: string, options: { separator?: string; decode?: Function }) => boolean \| never`                    |
+
+<br/>
 
 ## Note
 

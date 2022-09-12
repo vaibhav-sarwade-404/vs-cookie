@@ -63,4 +63,5 @@ export type VsCookieOption = {
 export type GetCookieOptions = {
   decode?: (str: string) => string;
   secret?: string;
+  separor?: string;
 };
