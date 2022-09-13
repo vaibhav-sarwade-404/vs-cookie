@@ -51,4 +51,5 @@ export declare type VsCookieOption = {
 export declare type GetCookieOptions = {
     decode?: (str: string) => string;
     secret?: string;
+    separor?: string;
 };
