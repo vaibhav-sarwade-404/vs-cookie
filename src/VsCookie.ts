@@ -4,6 +4,26 @@ import { GetCookieOptions, VsCookieOption } from "./types/VsCookie.types";
 
 const isValidValue = (val: string | undefined = "") => !/\s|\t/g.test(val);
 const separator = ":";
+const signatureSeparator = "$@$";
+
+const isValidCookieValue = (
+  cookieValue: string,
+  separator: string
+): boolean | never => {
+  if (cookieValue.includes(separator)) {
+    throw new TypeError(
+      `cookie value cannot conatain separator(${separator}).`
+    );
+  }
+  const signatureSeparatorRegex = new RegExp(signatureSeparator, "g");
+  const matchResult = cookieValue.match(signatureSeparatorRegex);
+  if (Array.isArray(matchResult) && matchResult.length) {
+    throw new TypeError(
+      `cookie value cannot conatain signature separator(${signatureSeparator}).`
+    );
+  }
+  return true;
+};
 class VsCookie {
   /**
    *
@@ -56,7 +76,7 @@ class VsCookie {
     const cookie = Array.isArray(cookieNameValuePair)
       ? cookieNameValuePair[1]
       : "";
-    const _separator = options?.separor || separator;
+    const _separator = options?.separator || separator;
     if (secret) {
       if (
         VsCookie.verify(cookie, secret, {
@@ -200,12 +220,13 @@ class VsCookie {
     const _seperate = options.separator || separator;
 
     const encode = options.encode || encodeURIComponent;
-    if (cookie.includes(_seperate)) {
-      throw new TypeError(
-        `cookie value cannot conatain separator(${_seperate}).`
-      );
-    }
-    return encode(`${cookie}${_seperate}${VsCookie.hash(cookie, secret)}`);
+    isValidCookieValue(cookie, _seperate);
+    return encode(
+      `${cookie}${_seperate}${VsCookie.hash(
+        `${cookie}${signatureSeparator}${secret}`,
+        secret
+      )}`
+    );
   }
 
   /**
@@ -254,7 +275,10 @@ class VsCookie {
     if (!originalCookieVal || !originalCookieHash) {
       return false;
     }
-    const cookieHash = VsCookie.hash(originalCookieVal, secret);
+    const cookieHash = VsCookie.hash(
+      `${originalCookieVal}${signatureSeparator}${secret}`,
+      secret
+    );
     const cookieBuffer1 = Buffer.from(originalCookieHash, "utf-8");
     const cookieBuffer2 = Buffer.from(cookieHash, "utf-8");
     return (

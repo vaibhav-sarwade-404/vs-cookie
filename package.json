@@ -1,6 +1,6 @@
 {
   "name": "@vs-org/cookie",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "This is simple cookie helper for handling cookie operations like create cookie, get cookie (signed or unsigned), sign cookie with secret, verify cookie signature, parse cookies from cookie string",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "test": "jest --config jestconfig.json",
-    "build": "npm test && rm -rf lib/ && tsc",
+    "build": "npm test && rm -rf lib/ && tsc && npm run post-build",
+    "post-build": "node build-utils/post-build-script.js",
     "prepublishOnly": "npm run build"
   },
   "repository": {
